@@ -1,6 +1,7 @@
 import os
 import tkinter as tk
 from tkinter import messagebox, filedialog
+import threading  #  Prevents Windows from hanging by handling the audio in the background
 from converter import TextToAudioConverter
 import config
 
@@ -26,7 +27,6 @@ class AudioConverterApp:
         voice_frame = tk.LabelFrame(self.root, text=" Choose Voice Profile ", font=("Arial", 10, "bold"), bg="#f4f4f6", padx=10, pady=5)
         voice_frame.pack(pady=10, fill="x", padx=20)
 
-        # Default selection pulls from config values
         self.voice_var = tk.IntVar(value=config.MALE_VOICE_INDEX)
         
         tk.Radiobutton(voice_frame, text="Male Voice Configuration", variable=self.voice_var, value=config.MALE_VOICE_INDEX, bg="#f4f4f6").pack(anchor="w", pady=2)
@@ -64,7 +64,7 @@ class AudioConverterApp:
                 messagebox.showerror("Read Failure", f"Could not load data file: {error}")
 
     def handle_generation(self):
-        """Reads variables from inputs, applies them to engine, and executes conversion."""
+        """Validates input, then creates a background thread to prevent the UI from freezing."""
         raw_input = self.text_box.get("1.0", tk.END).strip()
         chosen_voice = self.voice_var.get()
 
@@ -72,19 +72,25 @@ class AudioConverterApp:
             messagebox.showwarning("Missing Payload", "Please type or import some text details first.")
             return
 
+        # Fire the conversion process on a background worker thread
+        worker_thread = threading.Thread(target=self.run_conversion_backend, args=(raw_input, chosen_voice))
+        worker_thread.start()
+
+    def run_conversion_backend(self, raw_input, chosen_voice):
+        """Runs the actual heavy processing safely on a separate thread."""
         target_filename = "gui_output.mp3"
 
-        # Apply settings back to original converter variables
+        # Apply audio specifications to the engine
         self.converter.set_rate(config.DEFAULT_SPEED_WPM)
         self.converter.set_volume(config.DEFAULT_VOLUME)
         self.converter.set_voice(chosen_voice)
         
-        # Fire original file generation backend logic block
+        print("Processing conversion on a separate background thread...")
         is_successful = self.converter.save_as_mp3(raw_input, output_filename=target_filename)
 
+        # Once the background task finishes, bring up the alert and play the file
         if is_successful:
             messagebox.showinfo("Success", "Audio compiled cleanly! Launching media player.")
-            # Method 3: Automatically plays the file in Windows
             os.system(f"start {target_filename}")
         else:
             messagebox.showerror("Pipeline Exception", "The internal compilation engine failed to create audio.")
