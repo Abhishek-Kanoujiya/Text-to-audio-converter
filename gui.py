@@ -52,14 +52,28 @@ class AudioConverterApp:
         generate_btn.grid(row=0, column=1, padx=10)
 
     def import_text_file(self):
-        """Opens a file dialog window allowing users to load text directly into the application."""
-        target_path = filedialog.askopenfilename(filetypes=[("Text Documents", "*.txt")])
+        """Allows users to select either a plain text file or a Word document to load contents into the UI."""
+        # the filter to allow both .txt and .docx files
+        target_path = filedialog.askopenfilename(
+            filetypes=[("Text & Word Documents", "*.txt *.docx"), ("Text Documents", "*.txt"), ("Word Documents", "*.docx")]
+        )
+        
         if target_path:
             try:
-                with open(target_path, "r", encoding="utf-8") as raw_file:
-                    file_contents = raw_file.read()
+                # 2. Check if the user selected a Word Document
+                if target_path.endswith('.docx'):
+                    import docx
+                    doc = docx.Document(target_path)
+                    # Join all paragraphs in the document together with new lines
+                    file_contents = "\n".join([paragraph.text for paragraph in doc.paragraphs])
+                else:
+                    # Otherwise, read it as a standard text file
+                    with open(target_path, "r", encoding="utf-8") as raw_file:
+                        file_contents = raw_file.read()
+                        
                 self.text_box.delete("1.0", tk.END)
                 self.text_box.insert("1.0", file_contents)
+                
             except Exception as error:
                 messagebox.showerror("Read Failure", f"Could not load data file: {error}")
 
