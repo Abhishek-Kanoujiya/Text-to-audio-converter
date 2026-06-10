@@ -1,22 +1,23 @@
-# Text to Audio Converter
+# Text-to-Audio Converter
 
-A lightweight, object-oriented Python utility that converts raw text strings or study notes into offline, portable MP3 audio files using the `pyttsx3` library ecosystem.
+A modular, object-oriented Python application that provides a graphical user interface (GUI) to convert raw text strings or study notes into offline, portable MP3 audio files using the `pyttsx3` library.
 
 ## 📂 Project Structure
 
-The project uses modular components to separate configurations from runtime application loops:
-* `config.py`: Stores structural constants such as speech rate, volume scales, and voice profile preferences.
-* `converter.py`: Contains the core `TextToAudioConverter` class encapsulation layer managing speech synthesis.
-* `main.py`: The primary runtime application loader containing script execution configurations and text data strings.
-* `.gitignore`: Excludes volatile tracking parameters and local output audio assets from tracking into Git records.
+The codebase is split into specific, decoupled files for simple maintenance:
+* `config.py`: Stores application-wide settings like default speech rate, volume scales, and voice identifiers.
+* `converter.py`: Contains the core `TextToAudioConverter` class handling backend speech synthesis.
+* `gui.py`: The main entry point script that builds the interactive desktop interface using Tkinter.
+* `.gitignore`: Excludes Python environment caches and compiled audio outputs from cluttering the repository.
 
 ## ⚡ Key Features
-* **Object-Oriented Design:** Wrapped within fully scalable, reusable, and modular class implementations.
-* **Granular Parametric Controls:** Allows dynamic manipulation of delivery speed metrics (WPM), voice profile arrays, and gain outputs.
-* **Exception Prevention Management:** Features runtime validation loops ensuring empty payloads do not crash translation operations.
+* **Interactive Tkinter Interface:** Simple, native desktop window for handling user operations seamlessly.
+* **Dynamic Voice Selectors:** Real-time toggles to switch speech output profiles between Male and Female options.
+* **File Ingestion System:** Allows users to write raw text directly or load plain text (`.txt`) study sheets with a single click.
+* **Auto-Play Integration:** Uses system triggers to automatically launch the computer's default media player as soon as audio compilation finishes.
 
 ## 🛠️ Setup and Execution
 
-1. Initialize project environment setup dependencies:
+1.  The text-to-speech engine dependency is installed locally:
    ```bash
    pip install pyttsx3
