@@ -1,0 +1,6 @@
+# Ignore local python execution metadata
+__pycache__/
+*.pyc
+
+# Ignore output audio exports
+*.mp3
